@@ -2,12 +2,12 @@ from fastapi import FastAPI
 from typing import Optional
 from pydantic import BaseModel
 
-
 app = FastAPI()  #instance
 
 
 @app.get("/")   #HTTP "methods" -> POST  GET  PUT  DELETE
                 #Decorator                                                      
+@app.get("/")   #Decorator  
                 #main URL ( get --> get request)  
                 # ('/') -> Route/Endpoint/Path(FastAPI) 
                 #base path 
@@ -39,7 +39,8 @@ def get_id(id: int):
 #                    2. Default value
 #                    3. Optional[ <type> ] = None
 @app.get('/blog')
-def my_query(limit = 10, published : bool = True, sort: str = None):
+
+def my_query(limit = 10, published : bool = True, sort: Optional[str] = None):
     if published == 1:
         return {'data': {'limit': f'Hey you got {limit} published blogs from database.', 'published': published}}
     else:
@@ -67,4 +68,3 @@ def create_blog(request: Blog):
         return {'data': f"the blog is created as {request.title} and the blog is published."}
     else:
         return {'data': f"the blog is created as {request.title}."}
-
