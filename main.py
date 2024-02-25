@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from typing import Optional
 from pydantic import BaseModel
 import uvicorn
+from enum import Enum
 
 app = FastAPI()  #instance
 
@@ -56,6 +57,26 @@ def comment(id, limit = 10):
     return{'data':{id: {'1,2,3'}, 'limit': limit}}
 
 
+@app.get("/models")
+async def get_models():
+    return {'data': {'This is the first model.'}}
+
+
+class Model_name(str, Enum):
+    Mehrnaz = "Mehrnaz"
+    Mehrshad = "Mehrshad"
+
+@app.get('/models/{model_name}')
+def get_model_name(model_name: Model_name):
+    if model_name is model_name.Mehrnaz:
+        return {'model_name': {f'Hey, the model name is {model_name}.'}}
+    elif model_name.value == "Mehrshad":
+        return {'model_name': {f"Hi, the model name is the same as Mehrnaz brother's name, {model_name}"}}
+    else:
+        return {'model_name': {"Well, the model has some"}}
+
+
+
 ######################################################################################################################
 
 class Blog(BaseModel):
@@ -71,6 +92,6 @@ def create_blog(request: Blog):
         return {'data': f"the blog is created as {request.title}."}
 
 
-
+# To run on different addres -> used for Debugging
 #if __name__ == "__main__":
 #    uvicorn.run(app, host="127.0.0.1", port = 9000)
