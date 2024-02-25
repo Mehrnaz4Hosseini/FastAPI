@@ -63,4 +63,8 @@ class Blog(BaseModel):
 
 @app.post('/blog')  # POST decorator -> request
 def create_blog(request: Blog):
-    return {'data': f"the blog is created as {request.title}."}
+    if request.published:
+        return {'data': f"the blog is created as {request.title} and the blog is published."}
+    else:
+        return {'data': f"the blog is created as {request.title}."}
+
