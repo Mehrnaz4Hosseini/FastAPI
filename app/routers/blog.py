@@ -1,4 +1,6 @@
-from fastapi import APIRouter
+from typing import Optional, Union
+from fastapi import APIRouter, Query
+from typing_extensions import Annotated
 
 router = APIRouter()  # -> you can think of APIRouter as a "mini FastAPI" class.
 
@@ -15,20 +17,35 @@ def get_id(id: int):
     # requesting data from an API.
     return {'data': id}
 
+
 # Query parameter -> 1. not in the path 
 #                    2. Default value
 #                    3. Optional[ <type> ] = None
-@router.get('/blog')
 
-def my_query(limit = 10, published : bool = False, sort: Union[str, None] = None):
+# if the name in in path -> path parameter
+# else                   -> query parameter
+@router.get('/blog')
+def my_query(limit = 10, published : bool = False, sort: Union[str, None] = None): # -> sort is not required because of 
+                                                                                   # the default value = None.
+# " = None " -> tells FastAPI that this parameter is not required, NOT the " Union[str, None] "
     if published:
         return {'data': {'limit': f'Hey you got {limit} published blogs from database.', 'published': published}}
     else:
         return {'data':{'limit': "Sorry, you just got a few blogs", 'published': published}}
+    
+    
+async def read_item(q: Annotated[ Union[str, None] , Query(min_length=2, max_length=50, pattern="^Mehrnaz$")] = None): 
+# Union[str, None] = None <--the Same--> Annotated[Union[str, None]] = None
+# q is optional + its length doesn't exceed 50 characters.
+# pattern -> regex
 
 
-# if the name in in path -> path parameter
-# else                   -> query parameter
+    results = {"items": [{"item_id": "Mehrnaz"}, {"item_id": "Mehrshad"}]}
+    if q:
+        results.update({"q": q})
+    return results
+
+
 
 @router.get('/blog/{id}/comment')
 def comment(id, limit = 10):
