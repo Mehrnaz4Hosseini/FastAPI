@@ -3,7 +3,7 @@ from typing import Optional, Union
 from pydantic import BaseModel
 import uvicorn
 from enum import Enum
-from app.routers import blog
+from .routers import blog
 
 app = FastAPI()  #instance
 
@@ -11,9 +11,8 @@ app = FastAPI()  #instance
 app.include_router(blog.router)
 
 
-@app.get("/")   #HTTP "methods" -> POST  GET  PUT  DELETE
-                #Decorator                                                      
-@app.get("/")   #Decorator  
+@app.get("/")   #HTTP "methods" -> POST  GET  PUT  DELETE                                                   
+                #Decorator  
                 #main URL ( get --> get request)  
                 # ('/') -> Route/Endpoint/Path(FastAPI) 
                 #base path 
