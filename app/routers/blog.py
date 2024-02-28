@@ -6,7 +6,7 @@ from pydantic import BaseModel
 router = APIRouter()  # -> you can think of APIRouter as a "mini FastAPI" class.
 
 
-@router.get('/blog/unpublished', tags=["blog"])
+@router.get('/blog/unpublished')
 def get_unpublished_blog():
     return {'data': 'all unpublished data'}
 
@@ -14,7 +14,7 @@ def get_unpublished_blog():
 
 
 
-@router.get('/blog/{id}', tags=["blog"])   # usage -> creating routing
+@router.get('/blog/{id}')   # usage -> creating routing
 def get_blog_id(id: int):
     # fetch blog with id = id 
     # fetch -> API Requests: In the context of web development, “fetch” is often used to refer to the process of
@@ -31,7 +31,7 @@ def get_blog_id(id: int):
 
 # if the name in in path -> path parameter
 # else                   -> query parameter
-@router.get('/blog', tags=["blog"])
+@router.get('/blog')
 def my_blog_introduction(limit = 10, published : bool = False, sort: Union[str, None] = None): # -> sort is not required because of 
                                                                                    # the default value = None.
 # " = None " -> tells FastAPI that this parameter is not required, NOT the " Union[str, None] "
@@ -91,7 +91,7 @@ def get_repeated_item_in_blog_path(
 
 
 
-@router.get('/blog/{id}/comment', tags=["blog"])
+@router.get('/blog/{id}/comment')
 def blog_comment(id, limit = 10):
     return{'data':{id: {'1,2,3'}, 'limit': limit}}
 
@@ -111,7 +111,7 @@ class Blog(BaseModel):
     published: Optional[bool] = None
 
 
-@router.post('/blog/customer', tags=["blog"])  # POST decorator -> request
+@router.post('/blog/customer')  # POST decorator -> request
 def create_blog(request: Blog):
     if request.published:
         return {'data': f"the blog is created as {request.title} and the blog is published."}
@@ -121,7 +121,7 @@ def create_blog(request: Blog):
 
 
 
-@router.put('/blog/customer_update/{blog_id}', tags=["blog"])  
+@router.put('/blog/customer_update/{blog_id}')  
 # PUT ->  UPDATE an existing resource or create a new resource if it does not exist
 
 async def update_item(blog_id: int, request: Blog):
