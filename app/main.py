@@ -1,14 +1,14 @@
 from fastapi import FastAPI
-from typing import Optional, Union
-from pydantic import BaseModel
 import uvicorn
 from enum import Enum
-from .routers import blog
+from routers import blog
 
 app = FastAPI()  #instance
 
 
-app.include_router(blog.router)
+app.include_router(blog.router,
+                   prefix='/blog',
+                   tags=["Blog"])
 
 
 @app.get("/")   #HTTP "methods" -> POST  GET  PUT  DELETE                                                   
@@ -45,49 +45,6 @@ def get_model_name(model_name: Model_name):
         return {'model_name': {f"Hi, the model name is the same as Mehrnaz brother's name, {model_name}"}}
     else:
         return {'model_name': {"Well, the model has some"}}
-
-
-
-######################################################################################################################
-
-#request -> data sent by the client to your API
-#response -> data your API sends to the client
-    
-#send data -> POST (the more common), PUT, DELETE or PATCH.
-    
-
-class Blog(BaseModel):
-    title: str
-    body: Union[str, None] = None
-    published: Optional[bool] = None
-
-
-@app.post('/blog')  # POST decorator -> request
-def create_blog(request: Blog):
-    if request.published:
-        return {'data': f"the blog is created as {request.title} and the blog is published."}
-    else:
-        sum = request.published + request.title
-        return {'data': f"the blog is created as {request.title}."}
-
-
-
-@app.put('/blog/{blog_id}')  # PUT ->  UPDATE an existing resource or create a new resource if it does not exist
-async def update_item(blog_id: int, request: Blog):
-    return {'data': blog_id, **request.dict(), **request.model_dump()}
-#  **request.dict() -> convert a Pydantic model into a dictionary
-#  The new recommended method to achieve this is -> model_dump
-
-
-async def update_item_2(blog_id: int, request: Blog, q: Union[str, None] = None):
-    result = {'data': blog_id, **request.model_dump()}
-    if q:
-        return result.update({'q': q})  # update -> add an additional key-value pair to the result dictionary
-    else:
-        return result
-
-
-
 
 
 # To run on different addres -> used for Debugging

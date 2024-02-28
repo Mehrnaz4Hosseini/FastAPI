@@ -1,21 +1,28 @@
 from typing import Optional, Union
 from fastapi import APIRouter, Query
 from typing_extensions import Annotated
+from pydantic import BaseModel
 
 router = APIRouter()  # -> you can think of APIRouter as a "mini FastAPI" class.
 
 
-@router.get('/blog/unpublished')
-def get_unpublished():
+@router.get('/blog/unpublished', tags=["blog"])
+def get_unpublished_blog():
     return {'data': 'all unpublished data'}
 
 
-@router.get('/blog/{id}')   # usage -> creating routing
-def get_id(id: int):
+
+
+
+@router.get('/blog/{id}', tags=["blog"])   # usage -> creating routing
+def get_blog_id(id: int):
     # fetch blog with id = id 
     # fetch -> API Requests: In the context of web development, “fetch” is often used to refer to the process of
     # requesting data from an API.
     return {'data': id}
+
+
+
 
 
 # Query parameter -> 1. not in the path 
@@ -24,8 +31,8 @@ def get_id(id: int):
 
 # if the name in in path -> path parameter
 # else                   -> query parameter
-@router.get('/blog')
-def my_query(limit = 10, published : bool = False, sort: Union[str, None] = None): # -> sort is not required because of 
+@router.get('/blog', tags=["blog"])
+def my_blog_introduction(limit = 10, published : bool = False, sort: Union[str, None] = None): # -> sort is not required because of 
                                                                                    # the default value = None.
 # " = None " -> tells FastAPI that this parameter is not required, NOT the " Union[str, None] "
     if published:
@@ -34,7 +41,7 @@ def my_query(limit = 10, published : bool = False, sort: Union[str, None] = None
         return {'data':{'limit': "Sorry, you just got a few blogs", 'published': published}}
     
 
-async def read_item(
+async def read_blog_item(
         q: Annotated[
              Union[str, None] ,
                Query(
@@ -55,7 +62,7 @@ async def read_item(
         results.update({"q": q})
     return results
 
-def get_item(
+def get_blog_item(
         item: Annotated[ 
             Union[str, None],
               Query(
@@ -74,14 +81,62 @@ def get_item(
 
 
 # if we get item Multiple Times -> e.g) http://localhost:8000/blog/?q=Mehrnaz&q=Mehrshad
-def get_repeated_item( q: Annotated[ Union[ list , None], Query()] = ['Me', 'You']): # Query parameter be list? -> use Query
-                                                                                     # Otherwise -> request body
+def get_repeated_item_in_blog_path( 
+        q: Annotated[
+             Union[ list , None], Query()] = ['Me', 'You']): # Query parameter be list? -> use Query
+                                                             # Otherwise -> request body
     query_item = {'new_item': q}
     return query_item
 
 
 
 
-@router.get('/blog/{id}/comment')
-def comment(id, limit = 10):
+@router.get('/blog/{id}/comment', tags=["blog"])
+def blog_comment(id, limit = 10):
     return{'data':{id: {'1,2,3'}, 'limit': limit}}
+
+
+
+######################################################################################################################
+
+#request -> data sent by the client to your API
+#response -> data your API sends to the client
+    
+#send data -> POST (the more common), PUT, DELETE or PATCH.
+    
+
+class Blog(BaseModel):
+    title: str
+    body: Union[str, None] = None
+    published: Optional[bool] = None
+
+
+@router.post('/blog/customer', tags=["blog"])  # POST decorator -> request
+def create_blog(request: Blog):
+    if request.published:
+        return {'data': f"the blog is created as {request.title} and the blog is published."}
+    else:
+        sum = request.published + request.title
+        return {'data': [f"the blog is created as {request.title}.", sum]}
+
+
+
+@router.put('/blog/customer_update/{blog_id}', tags=["blog"])  
+# PUT ->  UPDATE an existing resource or create a new resource if it does not exist
+
+async def update_item(blog_id: int, request: Blog):
+    return {'data': blog_id, **request.dict(), **request.model_dump()}
+#  **request.dict() -> convert a Pydantic model into a dictionary
+#  The new recommended method to achieve this is -> model_dump
+
+
+async def update_item_2(blog_id: int, request: Blog, q: Union[str, None] = None):
+    result = {'data': blog_id, **request.model_dump()}
+    if q:
+        return result.update({'q': q})  # update -> add an additional key-value pair to the result dictionary
+    else:
+        return result
+
+
+
+
