@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-import uvicorn
 from routers import blog, models
+#import uvicorn
 
 app = FastAPI()  #instance
 
@@ -10,7 +10,7 @@ app.include_router(blog.router,
                    tags=["Blog"])
 app.include_router(models.router, 
                    prefix="/models",
-                   tags= ["models"])
+                   tags= ["Models"])
 
 
 
@@ -35,5 +35,5 @@ def about():
 
 
 # To run on different addres -> used for Debugging
-if __name__ == "__main__":
-    uvicorn.run(app, host="127.0.0.1", port = 9000)
+#if __name__ == "__main__":
+#    uvicorn.run(app, host="127.0.0.1", port = 9000)
