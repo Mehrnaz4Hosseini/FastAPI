@@ -41,7 +41,7 @@ async def read_item(
                    min_length=2,
                    max_length=50,
                    pattern="^Mehrnaz$",
-                   deprecated= True # recommanded not to use
+                   deprecated= True, # recommanded not to use
                    include_in_schema= False # Do not show a query parameter in the generated OpenAPI schema
                    )
                    ] = None): 
