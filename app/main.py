@@ -6,10 +6,8 @@ app = FastAPI()  #instance
 
 
 app.include_router(blog.router,
-                   prefix="/blog",
                    tags=["Blog"])
 app.include_router(models.router, 
-                   prefix="/models",
                    tags= ["Models"])
 
 
